@@ -131,6 +131,23 @@ class mp4Sig {
   }
 }
 
+class textSig {
+  match(data, firstNonWS) {
+    // c.f. section 5, step 4
+    for (let b of data.slice(firstNonWS)) {
+      if (
+        b <= 0x08 ||
+        b == 0x0b ||
+        (0x0e <= b && b <= 0x1a) ||
+        (0x1c <= b && b <= 0x1f)
+      ) {
+        return ''
+      }
+    }
+    return 'text/plain; charset=utf-8'
+  }
+}
+
 const sniffSignatures = [
   new exactSig(Buffer.from('%PDF-'), 'application/pdf'),
   new maskedSig(
@@ -140,5 +157,6 @@ const sniffSignatures = [
     'application/ogg'
   ),
   new htmlSig('<!DOCTYPE HTML'),
-  new mp4Sig()
+  new mp4Sig(),
+  new textSig() // should be last
 ]

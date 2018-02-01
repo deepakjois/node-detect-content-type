@@ -57,6 +57,11 @@ const sniffTests = [
       Buffer.from('mdat')
     ]),
     contentType: 'video/mp4'
+  },
+  {
+    desc: 'Plain text',
+    data: Buffer.from('This is not HTML. It has ☃ though.', 'utf8'),
+    contentType: 'text/plain; charset=utf-8'
   }
 ]
 
