@@ -22,7 +22,6 @@ export default function detectContentType(content) {
 }
 
 function isWS(b) {
-  console.log(b)
   switch (b) {
     case '\t':
     case '\n':
@@ -34,8 +33,6 @@ function isWS(b) {
   return false
 }
 
-const sniffSignatures = [new exactSig(Buffer.from('%PDF-'), 'application/pdf')]
-
 class exactSig {
   constructor(sig, ct) {
     this.sig = sig
@@ -43,9 +40,11 @@ class exactSig {
   }
 
   match(data) {
-    if (Buffer.compare(this.sig, data.slice(0, this.sig.length))) {
+    if (Buffer.compare(this.sig, data.slice(0, this.sig.length)) == 0) {
       return this.ct
     }
     return ''
   }
 }
+
+const sniffSignatures = [new exactSig(Buffer.from('%PDF-'), 'application/pdf')]
