@@ -5,5 +5,15 @@
 // detectContentType always returns a valid MIME type: if it cannot determine a
 // more specific one, it returns "application/octet-stream".
 export default function detectContentType(content) {
+  const data = content.slice(0, 512)
 
+  let firstNonWS = 0
+  while (firstNonWS < data.length && isWS(data[firstNonWS])) {
+    firstNonWS++
+  }
+}
+
+function isWS(b) {
+  // FIXME implement
+  console.log(b)
 }
