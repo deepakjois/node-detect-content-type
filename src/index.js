@@ -35,8 +35,7 @@ function isWS(b) {
 
 class exactSig {
   constructor(sig, ct) {
-    this.sig = sig
-    this.ct = ct
+    Object.assign(this, { sig, ct })
   }
 
   match(data) {
@@ -47,4 +46,37 @@ class exactSig {
   }
 }
 
-const sniffSignatures = [new exactSig(Buffer.from('%PDF-'), 'application/pdf')]
+class maskedSig {
+  constructor(mask, pat, skipWS, ct) {
+    Object.assign(this, { mask, pat, skipWS, ct })
+  }
+
+  match(data, firstNonWS) {
+    if (this.skipWs) {
+      data = data.slice(firstNonWS)
+    }
+    if (this.pat.length != this.mask.length) {
+      return ''
+    }
+    if (data.length < this.mask.length) {
+      return ''
+    }
+    for (let i = 0; i < this.mask.length; i++) {
+      let db = data[i] & this.mask[i]
+      if (db != this.pat[i]) {
+        return ''
+      }
+    }
+    return this.ct
+  }
+}
+
+const sniffSignatures = [
+  new exactSig(Buffer.from('%PDF-'), 'application/pdf'),
+  new maskedSig(
+    Buffer.from([0xff, 0xff, 0xff, 0xff, 0xff]),
+    Buffer.concat([Buffer.from('OggS'), Buffer.from([0x00])]),
+    false,
+    'application/ogg'
+  )
+]
