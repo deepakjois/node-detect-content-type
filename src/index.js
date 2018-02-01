@@ -23,11 +23,11 @@ export default function detectContentType(content) {
 
 function isWS(b) {
   switch (b) {
-    case '\t':
-    case '\n':
-    case '\x0c':
-    case '\r':
-    case ' ':
+    case '\t'.charCodeAt(0):
+    case '\n'.charCodeAt(0):
+    case '\x0c'.charCodeAt(0):
+    case '\r'.charCodeAt(0):
+    case ' '.charCodeAt(0):
       return true
   }
   return false
@@ -71,6 +71,36 @@ class maskedSig {
   }
 }
 
+class htmlSig {
+  constructor(h) {
+    this.h = Buffer.from(h)
+  }
+
+  match(data, firstNonWS) {
+    data = data.slice(firstNonWS)
+    if (data.length < this.h.length + 1) {
+      return ''
+    }
+
+    for (let i = 0; i < this.h.length; i++) {
+      let b = this.h[i]
+      let db = data[i]
+      if ('A'.charCodeAt(0) <= b && b <= 'Z'.charCodeAt(0)) {
+        db &= 0xdf
+      }
+      if (b != db) {
+        return ''
+      }
+    }
+    // Next byte must be space or right angle bracket.
+    let db = String.fromCharCode(data[this.h.length])
+    if (db != ' ' && db != '>') {
+      return ''
+    }
+    return 'text/html; charset=utf-8'
+  }
+}
+
 const sniffSignatures = [
   new exactSig(Buffer.from('%PDF-'), 'application/pdf'),
   new maskedSig(
@@ -78,5 +108,6 @@ const sniffSignatures = [
     Buffer.concat([Buffer.from('OggS'), Buffer.from([0x00])]),
     false,
     'application/ogg'
-  )
+  ),
+  new htmlSig('<!DOCTYPE HTML')
 ]

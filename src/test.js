@@ -40,6 +40,11 @@ const sniffTests = [
       ])
     ]),
     contentType: 'application/ogg'
+  },
+  {
+    desc: 'HTML document #3 (leading whitespace)',
+    data: Buffer.from('   <!DOCTYPE HTML>...'),
+    contentType: 'text/html; charset=utf-8'
   }
 ]
 
