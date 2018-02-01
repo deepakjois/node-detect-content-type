@@ -4,11 +4,11 @@
   "description": "detect-content-type implements the algorithm described at http://mimesniff.spec.whatwg.org/ to determine the Content-Type of the given data. It considers at most the first 512 bytes of data. It always returns a valid MIME type: if it cannot determine a more specific one, it returns \"application/octet-stream\". ",
   "main": "./lib/index.js",
   "scripts": {
-    "test": "mocha --require babel-register src/test.js",
+    "test": "mocha -C --require babel-register src/test.js",
     "build": "babel src -d lib",
     "prepublish": "npm run build",
     "lint": "eslint .",
-    "prettier": "prettier --write --no-semi --single-quote src/**/*.js",
+    "fmt": "prettier --write --no-semi --single-quote src/**/*.js",
     "precommit": "lint-staged"
   },
   "lint-staged": {
