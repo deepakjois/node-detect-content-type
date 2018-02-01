@@ -45,6 +45,18 @@ const sniffTests = [
     desc: 'HTML document #3 (leading whitespace)',
     data: Buffer.from('   <!DOCTYPE HTML>...'),
     contentType: 'text/html; charset=utf-8'
+  },
+  {
+    desc: 'MP4 video',
+    data: Buffer.concat([
+      Buffer.from([0x00, 0x00, 0x00, 0x18]),
+      Buffer.from('ftypmp42'),
+      Buffer.from([0x00, 0x00, 0x00, 0x00]),
+      Buffer.from('mp42isom<'),
+      Buffer.from([0x06, 't'.charCodeAt(0), 0xbf]),
+      Buffer.from('mdat')
+    ]),
+    contentType: 'video/mp4'
   }
 ]
 

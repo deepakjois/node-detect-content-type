@@ -101,6 +101,36 @@ class htmlSig {
   }
 }
 
+let mp4ftype = Buffer.from('ftyp')
+let mp4 = Buffer.from('mp4')
+
+class mp4Sig {
+  match(data) {
+    // https://mimesniff.spec.whatwg.org/#signature-for-mp4
+    // c.f. section 6.2.1
+    if (data.length < 12) {
+      return ''
+    }
+    let boxSize = data.readUInt32BE(0)
+    if (boxSize % 4 != 0 || data.length < boxSize) {
+      return ''
+    }
+    if (Buffer.compare(data.slice(4, 8), mp4ftype) != 0) {
+      return ''
+    }
+    for (let st = 8; st < boxSize; st += 4) {
+      if (st == 12) {
+        // minor version number
+        continue
+      }
+      if (Buffer.compare(data.slice(st, st + 3), mp4) == 0) {
+        return 'video/mp4'
+      }
+    }
+    return ''
+  }
+}
+
 const sniffSignatures = [
   new exactSig(Buffer.from('%PDF-'), 'application/pdf'),
   new maskedSig(
@@ -109,5 +139,6 @@ const sniffSignatures = [
     false,
     'application/ogg'
   ),
-  new htmlSig('<!DOCTYPE HTML')
+  new htmlSig('<!DOCTYPE HTML'),
+  new mp4Sig()
 ]
