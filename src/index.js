@@ -11,9 +11,28 @@ export default function detectContentType(content) {
   while (firstNonWS < data.length && isWS(data[firstNonWS])) {
     firstNonWS++
   }
+
+  for (let sig of sniffSignatures) {
+    let ct = sig.match(data, firstNonWS)
+    if (ct != '') {
+      return ct
+    }
+  }
+  return 'application/octet-stream' // fallback
 }
+
+const sniffSignatures = []
 
 function isWS(b) {
   // FIXME implement
   console.log(b)
+  switch (b) {
+    case '\t':
+    case '\n':
+    case '\x0c':
+    case '\r':
+    case ' ':
+      return true
+  }
+  return false
 }
