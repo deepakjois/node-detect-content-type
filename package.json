@@ -7,7 +7,16 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "babel src -d lib",
     "prepublish": "yarn run build",
-    "lint": "yarn run eslint ."
+    "lint": "eslint .",
+    "prettier": "prettier --write --no-semi --single-quote src/**/*.js",
+    "precommit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.js": [
+      "prettier --write --no-semi --single-quote",
+      "eslint",
+      "git add"
+    ]
   },
   "repository": {
     "type": "git",
@@ -27,6 +36,9 @@
     "babel-cli": "^6.26.0",
     "babel-eslint": "^8.2.1",
     "babel-preset-env": "^1.6.1",
-    "eslint": "^4.16.0"
+    "eslint": "^4.16.0",
+    "husky": "^0.14.3",
+    "lint-staged": "^6.1.0",
+    "prettier": "^1.10.2"
   }
 }
