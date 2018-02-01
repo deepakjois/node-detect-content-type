@@ -21,10 +21,7 @@ export default function detectContentType(content) {
   return 'application/octet-stream' // fallback
 }
 
-const sniffSignatures = []
-
 function isWS(b) {
-  // FIXME implement
   console.log(b)
   switch (b) {
     case '\t':
@@ -35,4 +32,20 @@ function isWS(b) {
       return true
   }
   return false
+}
+
+const sniffSignatures = [new exactSig(Buffer.from('%PDF-'), 'application/pdf')]
+
+class exactSig {
+  constructor(sig, ct) {
+    this.sig = sig
+    this.ct = ct
+  }
+
+  match(data) {
+    if (Buffer.compare(this.sig, data.slice(0, this.sig.length))) {
+      return this.ct
+    }
+    return ''
+  }
 }
