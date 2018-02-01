@@ -83,7 +83,7 @@ const sniffTests = [
   {
     desc: 'WAV audio #2',
     data: Buffer.concat([
-      Buffer.from('RIFF'),
+      Buffer.from('RIFF,'),
       Buffer.from([0x00, 0x00, 0x00]),
       Buffer.from('WAVEfmt '),
       Buffer.from([0x12, 0x00, 0x00, 0x00, 0x06])

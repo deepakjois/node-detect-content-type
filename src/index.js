@@ -25,7 +25,7 @@ function isWS(b) {
   switch (b) {
     case '\t'.charCodeAt(0):
     case '\n'.charCodeAt(0):
-    case '\x0c'.charCodeAt(0):
+    case ',0x0c'.charCodeAt(0):
     case '\r'.charCodeAt(0):
     case ' '.charCodeAt(0):
       return true
@@ -52,7 +52,7 @@ class maskedSig {
   }
 
   match(data, firstNonWS) {
-    if (this.skipWs) {
+    if (this.skipWS) {
       data = data.slice(firstNonWS)
     }
     if (this.pat.length != this.mask.length) {
@@ -149,14 +149,178 @@ class textSig {
 }
 
 const sniffSignatures = [
-  new exactSig(Buffer.from('%PDF-'), 'application/pdf'),
+  new htmlSig('<!DOCTYPE HTML'),
+  new htmlSig('<HTML'),
+  new htmlSig('<HEAD'),
+  new htmlSig('<SCRIPT'),
+  new htmlSig('<IFRAME'),
+  new htmlSig('<H1'),
+  new htmlSig('<DIV'),
+  new htmlSig('<FONT'),
+  new htmlSig('<TABLE'),
+  new htmlSig('<A'),
+  new htmlSig('<STYLE'),
+  new htmlSig('<TITLE'),
+  new htmlSig('<B'),
+  new htmlSig('<BODY'),
+  new htmlSig('<BR'),
+  new htmlSig('<P'),
+  new htmlSig('<!--'),
+
   new maskedSig(
     Buffer.from([0xff, 0xff, 0xff, 0xff, 0xff]),
-    Buffer.concat([Buffer.from('OggS'), Buffer.from([0x00])]),
+    Buffer.from('<?xml'),
+    true,
+    'text/xml; charset=utf-8'
+  ),
+
+  new exactSig(Buffer.from('%PDF-'), 'application/pdf'),
+  new exactSig(Buffer.from('%!PS-Adobe-'), 'application/postscript'),
+
+  // UTF BOMs.
+  new maskedSig(
+    Buffer.from([0xff, 0xff, 0x00, 0x00]),
+    Buffer.from([0xfe, 0xff, 0x00, 0x00]),
+    false,
+    'text/plain; charset=utf-16be'
+  ),
+  new maskedSig(
+    Buffer.from([0xff, 0xff, 0x00, 0x00]),
+    Buffer.from([0xff, 0xfe, 0x00, 0x00]),
+    false,
+    'text/plain; charset=utf-16le'
+  ),
+  new maskedSig(
+    Buffer.from([0xff, 0xff, 0xff, 0x00]),
+    Buffer.from([0xef, 0xbb, 0xbf, 0x00]),
+    false,
+    'text/plain; charset=utf-8'
+  ),
+
+  new exactSig(Buffer.from('GIF87a'), 'image/gif'),
+  new exactSig(Buffer.from('GIF89a'), 'image/gif'),
+  new exactSig(
+    Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
+    'image/png'
+  ),
+  new exactSig(Buffer.from([0xff, 0xd8, 0xff]), 'image/jpeg'),
+  new exactSig(Buffer.from('BM'), 'image/bmp'),
+  new maskedSig(
+    Buffer.from([
+      0xff,
+      0xff,
+      0xff,
+      0xff,
+      0x00,
+      0x00,
+      0x00,
+      0x00,
+      0xff,
+      0xff,
+      0xff,
+      0xff,
+      0xff,
+      0xff
+    ]),
+    Buffer.from('RIFF\x00\x00\x00\x00WEBPVP'),
+    false,
+    'image/webp'
+  ),
+  new exactSig(
+    Buffer.from([0x00, 0x00, 0x01, 0x00]),
+    'image/vnd.microsoft.icon'
+  ),
+
+  new maskedSig(
+    Buffer.from([
+      0xff,
+      0xff,
+      0xff,
+      0xff,
+      0x00,
+      0x00,
+      0x00,
+      0x00,
+      0xff,
+      0xff,
+      0xff,
+      0xff
+    ]),
+    Buffer.from('RIFF\x00\x00\x00\x00WAVE'),
+    false,
+    'audio/wave'
+  ),
+  new maskedSig(
+    Buffer.from([
+      0xff,
+      0xff,
+      0xff,
+      0xff,
+      0x00,
+      0x00,
+      0x00,
+      0x00,
+      0xff,
+      0xff,
+      0xff,
+      0xff
+    ]),
+    Buffer.from('FORM\x00\x00\x00\x00AIFF'),
+    false,
+    'audio/aiff'
+  ),
+  new maskedSig(
+    Buffer.from([0xff, 0xff, 0xff, 0xff]),
+    Buffer.from('.snd'),
+    false,
+    'audio/basic'
+  ),
+  new maskedSig(
+    Buffer.from([0xff, 0xff, 0xff, 0xff, 0xff]),
+    Buffer.from('OggS\x00'),
     false,
     'application/ogg'
   ),
-  new htmlSig('<!DOCTYPE HTML'),
+  new maskedSig(
+    Buffer.from([0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff]),
+    Buffer.concat([Buffer.from('MThd'), Buffer.from([0x00, 0x00, 0x00, 0x06])]),
+    false,
+    'audio/midi'
+  ),
+  new maskedSig(
+    Buffer.from([0xff, 0xff, 0xff]),
+    Buffer.from('ID3'),
+    false,
+    'audio/mpeg'
+  ),
+
+  new maskedSig(
+    Buffer.from([
+      0xff,
+      0xff,
+      0xff,
+      0xff,
+      0x00,
+      0x00,
+      0x00,
+      0x00,
+      0xff,
+      0xff,
+      0xff,
+      0xff
+    ]),
+    Buffer.from('RIFF\x00\x00\x00\x00AVI '),
+    false,
+    'video/avi'
+  ),
+  new exactSig(Buffer.from([0x1a, 0x45, 0xdf, 0xa3]), 'video/webm'),
+
+  new exactSig(
+    Buffer.from([0x52, 0x61, 0x72, 0x20, 0x1a, 0x07, 0x00]),
+    'application/x-rar-compressed'
+  ),
+  new exactSig(Buffer.from([0x50, 0x4b, 0x03, 0x04]), 'application/zip'),
+  new exactSig(Buffer.from([0x1f, 0x8b, 0x08]), 'application/x-gzip'),
   new mp4Sig(),
   new textSig() // should be last
 ]
