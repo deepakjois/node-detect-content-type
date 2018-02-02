@@ -1,6 +1,6 @@
 {
   "name": "detect-content-type",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "detect-content-type implements the algorithm described at http://mimesniff.spec.whatwg.org/ to determine the Content-Type of the given data. It considers at most the first 512 bytes of data. It always returns a valid MIME type: if it cannot determine a more specific one, it returns \"application/octet-stream\". ",
   "main": "./lib/index.js",
   "scripts": {
