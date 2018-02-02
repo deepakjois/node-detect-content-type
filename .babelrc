@@ -4,5 +4,8 @@
     {
       "targets": { "node": "current" }
     }]
+  ],
+  "plugins": [
+    "add-module-exports"
   ]
 }

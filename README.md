@@ -24,7 +24,7 @@ import detectContentType from 'detect-content-type'
 
 Using CommonJS:
 ```javascript
-var detectContentType = require('detect-content-type').default
+var detectContentType = require('detect-content-type')
 ```
 
 ## Usage 
