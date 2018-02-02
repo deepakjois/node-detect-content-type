@@ -6,7 +6,7 @@
   "scripts": {
     "test": "mocha -C --require babel-register src/test.js",
     "build": "babel src -d lib",
-    "prepublish": "npm run build",
+    "prepare": "npm run build",
     "lint": "eslint .",
     "fmt": "prettier --write --no-semi --single-quote src/**/*.js",
     "precommit": "lint-staged"
