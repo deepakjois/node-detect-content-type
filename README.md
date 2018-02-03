@@ -17,7 +17,7 @@ yarn add detect-content-type
 
 
 ## Import
-ES6 and above:
+ES2015 and above:
 ```javascript
 import detectContentType from 'detect-content-type'
 ```
